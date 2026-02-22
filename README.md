@@ -16,10 +16,6 @@ Inspired by USC Symphony Orchestra orientation trivia, this project is designed 
 3. Submit and get instant error-based scoring.
 4. Replay the same BPM or generate a new one.
 
-## Run locally
+## Live Demo
 
-Open `index.html` directly, or serve the folder with a static file server.
-
-## Deploy (GitHub Pages)
-
-Push this repository and set GitHub Pages source to the repository root (or `/docs` if you move files there).
+Live version: [https://wuisabel-gif.github.io/Metronome-Speed-Guess/](https://wuisabel-gif.github.io/Metronome-Speed-Guess/) 

@@ -4,11 +4,6 @@ A browser-based ear-training game where players hear a metronome and guess the B
 
 Inspired by USC Symphony Orchestra orientation trivia, this project is designed to help musicians sharpen tempo recognition, listening accuracy, and internal pulse consistency under light pressure.
 
-- WebAudio click synthesis (no libraries)
-- Streak scoring + difficulty modes
-- Single-file deploy for GitHub Pages
-- Keyboard and button controls for fast replay practice
-
 ## How it works
 
 1. Press `Play` to hear a short click track.

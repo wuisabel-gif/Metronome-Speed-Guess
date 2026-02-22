@@ -18,4 +18,8 @@ Inspired by USC Symphony Orchestra orientation trivia, this project is designed 
 
 ## Live Demo
 
+<<<<<<< HEAD
 Live version: [https://wuisabel-gif.github.io/Metronome-Speed-Guess/](https://wuisabel-gif.github.io/Metronome-Speed-Guess/) 
+=======
+Live version: [https://wuisabel-gif.github.io/Metronome-Speed-Guess/](https://wuisabel-gif.github.io/Metronome-Speed-Guess/)
+>>>>>>> 3da12d1 (Polish client-facing copy and keyboard hint layout)

@@ -68,6 +68,11 @@
       line-height: 1.45;
     }
 
+    .keys-line {
+      display: block;
+      margin-top: 2px;
+    }
+
     .row {
       display: flex;
       flex-wrap: wrap;
@@ -194,7 +199,10 @@
   <div class="wrap">
     <div class="card">
       <h1>Metronome Speed Guess</h1>
-      <div class="muted">Inspired by USC Symphony Orchestra orientation trivia. Designed to help musicians build sharper tempo recognition. Keys: <span class="kbd">P</span> play, <span class="kbd">Space</span> submit, <span class="kbd">↑/↓</span> adjust.</div>
+      <div class="muted">
+        Inspired by USC Symphony Orchestra orientation trivia. Designed to help musicians build sharper tempo recognition.
+        <span class="keys-line">Keys: <span class="kbd">P</span> play, <span class="kbd">Space</span> submit, <span class="kbd">↑/↓</span> adjust.</span>
+      </div>
 
       <div class="row">
         <label class="muted" for="mode">Mode</label>

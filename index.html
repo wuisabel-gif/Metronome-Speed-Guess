@@ -5,259 +5,614 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Metronome Speed Guess</title>
   <style>
-    :root {
-      --bg: #f8f4ea;
-      --paper: #fffdf7;
-      --ink: #1c1a17;
-      --muted: #6f685e;
-      --line: rgba(28, 26, 23, 0.12);
-      --accent: #c5542d;
-      --accent-2: #274c77;
-      --ok: #2f6f44;
-      --warn: #9e3a1f;
-      --radius: 16px;
-      --shadow: 0 14px 34px rgba(28, 26, 23, 0.12);
+    @font-face {
+      font-family: "ALK Life";
+      src: url("fonts/alk-life-webfont.ttf") format("truetype");
+      font-weight: 400;
+      font-style: normal;
+      font-display: swap;
     }
 
-    * {
-      box-sizing: border-box;
+    :root {
+      --bg: #f3ebd9;
+      --paper: #fffdf6;
+      --paper-2: #fbf5e6;
+      --ink: #211d17;
+      --ink-soft: #4a4339;
+      --muted-text: #7b7263;
+      --line: rgba(33, 29, 23, 0.12);
+      --line-strong: rgba(33, 29, 23, 0.2);
+      --accent: #c5542d;
+      --accent-deep: #a23f1d;
+      --accent-soft: rgba(197, 84, 45, 0.12);
+      --ink-blue: #274c77;
+      --ok: #2f6f44;
+      --ok-soft: rgba(47, 111, 68, 0.12);
+      --warn: #9e3a1f;
+
+      --radius: 18px;
+      --radius-sm: 12px;
+      --shadow-panel: 0 30px 60px -28px rgba(33, 29, 23, 0.4), 0 2px 0 rgba(255, 255, 255, 0.7) inset;
+      --shadow-soft: 0 10px 24px -14px rgba(33, 29, 23, 0.45);
+
+      --z-base: 1;
+      --z-raised: 10;
+
+      --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
     }
+
+    * { box-sizing: border-box; }
+
+    html { -webkit-text-size-adjust: 100%; }
 
     body {
       margin: 0;
       min-height: 100vh;
-      font-family: "Avenir Next", "Segoe UI", sans-serif;
+      font-family: "ALK Life", "Avenir Next", "Segoe UI", system-ui, -apple-system, sans-serif;
+      letter-spacing: 0.01em;
       color: var(--ink);
       background:
-        radial-gradient(circle at 10% 8%, rgba(197, 84, 45, 0.16), transparent 34%),
-        radial-gradient(circle at 90% 20%, rgba(39, 76, 119, 0.13), transparent 30%),
-        linear-gradient(180deg, #fff9ed, #f7f0e1 55%, #f0e4cf 100%);
+        radial-gradient(120% 90% at 50% -10%, #fff8e8 0%, transparent 55%),
+        linear-gradient(180deg, #f6efdd 0%, #efe5cd 60%, #e9ddc1 100%);
       display: flex;
+      align-items: flex-start;
       justify-content: center;
-      padding: 24px;
+      padding: clamp(16px, 4vw, 48px) 16px;
     }
 
-    .wrap {
-      width: min(860px, 100%);
-      animation: rise 320ms ease-out both;
+    .stage {
+      width: min(620px, 100%);
+      animation: rise 480ms var(--ease-out) both;
     }
 
     @keyframes rise {
-      from { transform: translateY(14px); opacity: 0; }
+      from { transform: translateY(16px); opacity: 0; }
       to { transform: translateY(0); opacity: 1; }
     }
 
-    .card {
-      border: 1px solid var(--line);
-      background: var(--paper);
-      border-radius: calc(var(--radius) + 2px);
-      padding: 18px;
-      box-shadow: var(--shadow);
-    }
+    /* ---------- Header ---------- */
+    .head { text-align: center; margin-bottom: clamp(18px, 3vw, 26px); }
 
     h1 {
-      font-family: Georgia, "Times New Roman", serif;
-      margin: 0 0 6px;
-      font-size: clamp(1.35rem, 2.2vw, 1.7rem);
-      letter-spacing: 0.02em;
-    }
-
-    .muted {
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.45;
-    }
-
-    .keys-line {
-      display: block;
-      margin-top: 2px;
-    }
-
-    .row {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 10px;
-      margin-top: 12px;
-    }
-
-    button,
-    select,
-    input {
-      border: 1px solid var(--line);
-      border-radius: 14px;
-      font: inherit;
-      font-size: 14px;
+      font-family: "ALK Life", "Avenir Next", system-ui, sans-serif;
+      margin: 0;
+      font-size: clamp(2.4rem, 8vw, 3.6rem);
+      line-height: 0.98;
+      letter-spacing: 0.01em;
       color: var(--ink);
-      background: white;
-      padding: 10px 12px;
-      transition: transform 120ms ease, box-shadow 120ms ease, border-color 120ms ease;
+      text-wrap: balance;
     }
 
-    button {
-      cursor: pointer;
-      box-shadow: 0 4px 0 rgba(28, 26, 23, 0.06);
+    h1 .accent { color: var(--accent); }
+
+    .tagline {
+      margin: 12px auto 0;
+      max-width: 46ch;
+      color: var(--ink-soft);
+      font-size: 0.95rem;
+      line-height: 1.55;
+      text-wrap: pretty;
     }
 
-    button:hover:not(:disabled),
-    button:focus-visible,
-    select:focus-visible,
-    input:focus-visible {
+    /* ---------- Panel ---------- */
+    .panel {
+      position: relative;
+      background:
+        linear-gradient(180deg, var(--paper), var(--paper-2));
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-panel);
+      padding: clamp(18px, 4vw, 30px);
+      overflow: hidden;
+    }
+
+    /* faint music-staff motif at the top edge */
+    .panel::before {
+      content: "";
+      position: absolute;
+      inset: 0 0 auto 0;
+      height: 84px;
+      background-image: repeating-linear-gradient(
+        to bottom,
+        transparent 0 15px,
+        var(--line) 15px 16px
+      );
+      opacity: 0.5;
+      -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,0.6), transparent);
+      mask-image: linear-gradient(to bottom, rgba(0,0,0,0.6), transparent);
+      pointer-events: none;
+    }
+
+    .panel > * { position: relative; z-index: var(--z-base); }
+
+    /* ---------- Pulse centerpiece ---------- */
+    .pulse-stage {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      padding: 8px 0 4px;
+    }
+
+    .disc {
+      position: relative;
+      width: clamp(150px, 38vw, 184px);
+      height: clamp(150px, 38vw, 184px);
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at 50% 38%, #fffefb, var(--paper-2));
+      border: 1px solid var(--line);
+      box-shadow:
+        0 18px 40px -20px rgba(33, 29, 23, 0.5),
+        0 0 0 8px rgba(255, 255, 255, 0.45) inset;
+      transition: box-shadow 220ms var(--ease-out);
+    }
+
+    /* concentric ring that lights up on the downbeat */
+    .disc::after {
+      content: "";
+      position: absolute;
+      inset: 14px;
+      border-radius: 50%;
+      border: 2px solid var(--accent-soft);
+      transition: border-color 200ms var(--ease-out);
+    }
+
+    .disc.playing { box-shadow: 0 18px 50px -18px rgba(197, 84, 45, 0.55), 0 0 0 8px rgba(255, 255, 255, 0.45) inset; }
+    .disc.playing::after { border-color: rgba(197, 84, 45, 0.3); }
+
+    .disc-inner { display: grid; place-items: center; gap: 2px; }
+
+    .disc-value {
+      font-family: "ALK Life", "Avenir Next", system-ui, sans-serif;
+      font-size: clamp(3.2rem, 12vw, 4.6rem);
+      line-height: 1;
+      color: var(--ink-blue);
+    }
+    .disc.hidden-value .disc-value { color: var(--accent); }
+
+    .disc-unit {
+      font-size: 0.78rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--muted-text);
+    }
+
+    /* beat dots */
+    .beats { display: flex; gap: 10px; align-items: center; height: 14px; }
+    .beat {
+      width: 9px; height: 9px; border-radius: 50%;
+      background: var(--line-strong);
+      transition: transform 140ms var(--ease-out), background-color 140ms var(--ease-out);
+    }
+    .beat.active { background: var(--ink-blue); transform: scale(1.35); }
+    .beat.active.down { background: var(--accent); transform: scale(1.6); }
+
+    .status {
+      min-height: 1.3em;
+      font-size: 0.9rem;
+      color: var(--muted-text);
+      text-align: center;
+      letter-spacing: 0.01em;
+    }
+
+    /* ---------- Divider ---------- */
+    .rule {
+      border: 0;
+      height: 1px;
+      background: var(--line);
+      margin: clamp(18px, 3vw, 24px) 0;
+    }
+
+    /* ---------- Transport ---------- */
+    .transport {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+    }
+
+    /* ---------- Controls shared ---------- */
+    button, select, input {
+      font: inherit;
+      color: var(--ink);
+      border: 1px solid var(--line-strong);
+      border-radius: var(--radius-sm);
+      background: #fff;
+      padding: 11px 12px;
+      transition: transform 120ms var(--ease-out), box-shadow 160ms var(--ease-out),
+                  border-color 160ms var(--ease-out), background-color 160ms var(--ease-out);
+    }
+
+    button { cursor: pointer; font-size: 0.92rem; font-weight: 600; box-shadow: var(--shadow-soft); }
+
+    button:hover:not(:disabled) { border-color: var(--line-strong); transform: translateY(-1px); }
+    button:active:not(:disabled) { transform: translateY(0); box-shadow: none; }
+    button:disabled { opacity: 0.42; cursor: not-allowed; box-shadow: none; }
+
+    :where(button, select, input):focus-visible {
       outline: none;
-      border-color: rgba(39, 76, 119, 0.5);
-      box-shadow: 0 0 0 3px rgba(39, 76, 119, 0.14);
-    }
-
-    button:active:not(:disabled) {
-      transform: translateY(1px);
-      box-shadow: 0 3px 0 rgba(28, 26, 23, 0.05);
+      border-color: var(--ink-blue);
+      box-shadow: 0 0 0 3px rgba(39, 76, 119, 0.18);
     }
 
     button.primary {
+      grid-column: span 4;
       background: var(--accent);
       color: #fff;
-      border-color: color-mix(in srgb, var(--accent), #000 20%);
+      border-color: var(--accent-deep);
+      font-size: 1rem;
+      padding: 14px;
+      box-shadow: 0 12px 26px -12px rgba(197, 84, 45, 0.7);
     }
+    button.primary:hover:not(:disabled) { background: var(--accent-deep); }
 
-    button:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
+    /* ---------- Guess block ---------- */
+    .guess-block { margin-top: 4px; }
 
-    .value {
-      font-size: clamp(1.1rem, 2vw, 1.4rem);
-      margin-top: 10px;
-      color: var(--accent-2);
-      min-height: 1.8em;
+    .field-label {
+      display: block;
+      font-size: 0.78rem;
+      letter-spacing: 0.04em;
+      color: var(--muted-text);
+      margin-bottom: 8px;
       font-weight: 600;
     }
 
-    .score {
-      display: grid;
-      gap: 10px;
-      margin-top: 12px;
-      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    .stepper {
+      display: flex;
+      align-items: stretch;
+      gap: 8px;
+      flex-wrap: wrap;
     }
 
-    .pill {
+    .stepper .nudge {
+      flex: 0 0 auto;
+      min-width: 46px;
+      font-variant-numeric: tabular-nums;
+      background: var(--paper-2);
+      color: var(--ink-soft);
+    }
+
+    #guess {
+      flex: 1 1 120px;
+      min-width: 110px;
+      text-align: center;
+      font-size: 1.25rem;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: 0.02em;
+      padding: 10px;
+      background: var(--paper);
+    }
+    /* hide native number spinners (custom steppers provided) */
+    #guess::-webkit-outer-spin-button,
+    #guess::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+    #guess { -moz-appearance: textfield; appearance: textfield; }
+
+    button.submit {
+      flex: 1 1 100%;
+      margin-top: 8px;
+      background: var(--ink-blue);
+      color: #fff;
+      border-color: #1d3a5c;
+    }
+    button.submit:hover:not(:disabled) { background: #1d3a5c; }
+
+    /* ---------- Result ---------- */
+    .result {
+      margin-top: 16px;
+      min-height: 1.6em;
+      text-align: center;
+      font-size: 1.02rem;
+      font-weight: 600;
+      color: var(--ink-soft);
+      transition: color 160ms var(--ease-out);
+    }
+    .result .judgement { font-family: "ALK Life", system-ui, sans-serif; font-size: 1.5rem; font-weight: 400; }
+    .result.ok { color: var(--ok); }
+    .result.danger { color: var(--warn); }
+
+    /* ---------- Stats ---------- */
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-top: 18px;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      background: rgba(255, 253, 246, 0.6);
+    }
+    .stat { text-align: center; }
+    .stat-value {
+      font-size: 1.25rem;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      color: var(--ink);
+      line-height: 1.1;
+    }
+    .stat-value.small { font-size: 0.98rem; }
+    .stat-label {
+      display: block;
+      margin-top: 3px;
+      font-size: 0.7rem;
+      letter-spacing: 0.04em;
+      color: var(--muted-text);
+      text-transform: uppercase;
+    }
+
+    /* ---------- Scoring legend ---------- */
+    .legend { margin-top: 18px; }
+    .legend-title {
+      display: block;
+      text-align: center;
+      font-size: 0.78rem;
+      letter-spacing: 0.04em;
+      color: var(--muted-text);
+      margin-bottom: 10px;
+      font-weight: 600;
+    }
+    .tiers {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px;
+    }
+    .tier {
+      display: inline-flex;
+      align-items: baseline;
+      gap: 7px;
+      padding: 6px 12px;
       border: 1px solid var(--line);
       border-radius: 999px;
-      padding: 8px 10px;
-      color: var(--muted);
+      background: rgba(255, 253, 246, 0.7);
+    }
+    .tier .dot {
+      align-self: center;
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--tier);
+      flex: 0 0 auto;
+    }
+    .tier .name {
+      font-family: "ALK Life", system-ui, sans-serif;
+      font-size: 1.02rem;
+      color: var(--tier);
+      line-height: 1;
+    }
+    .tier .range {
+      font-size: 0.76rem;
+      color: var(--muted-text);
+      font-variant-numeric: tabular-nums;
+    }
+    .t-perfect { --tier: #2f6f44; }
+    .t-clean   { --tier: #3f7d57; }
+    .t-close   { --tier: var(--ink-blue); }
+    .t-off     { --tier: var(--accent); }
+    .t-wild    { --tier: var(--warn); }
+
+    .legend-note {
+      margin: 10px 0 0;
       text-align: center;
-      background: #fff;
-      font-size: 13px;
+      font-size: 0.78rem;
+      color: var(--muted-text);
     }
 
+    /* ---------- Settings ---------- */
+    .settings {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 18px;
+    }
+    .setting { display: flex; flex-direction: column; gap: 6px; }
+    .setting select { width: 100%; cursor: pointer; }
+
+    /* ---------- Footnotes ---------- */
+    .tip {
+      margin-top: 16px;
+      font-size: 0.84rem;
+      color: var(--muted-text);
+      line-height: 1.5;
+      text-align: center;
+    }
     .log {
-      margin-top: 12px;
-      font-size: 12px;
-      white-space: pre-wrap;
-      color: var(--muted);
-      font-family: Menlo, Consolas, monospace;
+      margin-top: 8px;
+      font-size: 0.82rem;
+      letter-spacing: 0.02em;
+      color: var(--muted-text);
+      text-align: center;
+      min-height: 1em;
     }
 
+    .keys {
+      margin-top: 14px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 6px 14px;
+      font-size: 0.8rem;
+      color: var(--muted-text);
+    }
+    .keys span { display: inline-flex; align-items: center; gap: 5px; }
     .kbd {
-      border: 1px solid var(--line);
+      font-size: 0.82rem;
+      border: 1px solid var(--line-strong);
       border-bottom-width: 2px;
-      border-radius: 8px;
-      padding: 2px 6px;
+      border-radius: 6px;
+      padding: 1px 6px;
       background: #fff;
+      color: var(--ink-soft);
     }
 
-    .danger {
-      color: var(--warn);
+    /* ---------- Footer ---------- */
+    .credit {
+      margin-top: clamp(16px, 3vw, 22px);
+      text-align: center;
+      font-size: 0.8rem;
+      letter-spacing: 0.01em;
+      color: var(--muted-text);
+    }
+    .credit a {
+      color: var(--accent-deep);
+      font-weight: 600;
+      text-decoration: none;
+      border-bottom: 1px solid var(--accent-soft);
+      transition: border-color 160ms var(--ease-out), color 160ms var(--ease-out);
+    }
+    .credit a:hover,
+    .credit a:focus-visible {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+      outline: none;
     }
 
-    .ok {
-      color: var(--ok);
+    /* ---------- Responsive ---------- */
+    @media (max-width: 460px) {
+      .transport { grid-template-columns: repeat(3, 1fr); }
+      .transport .span-3 { grid-column: span 3; }
+      .stats { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+      .settings { grid-template-columns: 1fr; }
+
+      .stepper { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+      #guess { grid-column: 1 / -1; order: -1; min-width: 0; }
+      .stepper .nudge { min-width: 0; }
+      button.submit { grid-column: 1 / -1; }
     }
 
-    @media (max-width: 560px) {
-      body {
-        padding: 14px;
-      }
-
-      .card {
-        padding: 14px;
-      }
-
-      .row {
-        gap: 8px;
-      }
-
-      button,
-      select,
-      input {
-        font-size: 13px;
-        padding: 9px 11px;
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
       }
     }
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <div class="card">
-      <h1>Metronome Speed Guess</h1>
-      <div class="muted">
-        Inspired by USC Symphony Orchestra orientation trivia. Designed to help musicians build sharper tempo recognition.
-        <span class="keys-line">Keys: <span class="kbd">P</span> play, <span class="kbd">Space</span> submit, <span class="kbd">↑/↓</span> adjust.</span>
-      </div>
+  <main class="stage">
+    <header class="head">
+      <h1>Metronome <span class="accent">Speed</span> Guess</h1>
+      <p class="tagline">
+        Inspired by USC Symphony Orchestra orientation trivia &mdash; a tempo
+        ear-trainer for sharpening your internal pulse.
+      </p>
+    </header>
 
-      <div class="row">
-        <label class="muted" for="mode">Mode</label>
-        <select id="mode">
-          <option value="easy">Easy (multiples of 10)</option>
-          <option value="musician">Musician (multiples of 2)</option>
-          <option value="hard">Hard (any integer)</option>
-        </select>
+    <div class="panel">
+      <section class="pulse-stage" aria-live="polite">
+        <div class="disc hidden-value" id="disc">
+          <div class="disc-inner">
+            <span class="disc-value" id="discValue">?</span>
+            <span class="disc-unit">BPM</span>
+          </div>
+        </div>
+        <div class="beats" id="beats" aria-hidden="true"></div>
+        <div class="status muted" id="status"></div>
+      </section>
 
-        <label class="muted" for="range">Range</label>
-        <select id="range">
-          <option value="40-120">40-120</option>
-          <option value="60-160" selected>60-160</option>
-          <option value="40-208">40-208</option>
-        </select>
-
-        <label class="muted" for="len">Play length</label>
-        <select id="len">
-          <option value="3">3s</option>
-          <option value="4" selected>4s</option>
-          <option value="5">5s</option>
-        </select>
-      </div>
-
-      <div class="row">
-        <button class="primary" id="play">Play</button>
-        <button id="replay" disabled>Replay same</button>
+      <div class="transport">
+        <button class="primary" id="play">Play tempo</button>
+        <button id="replay" class="span-3" disabled>Replay</button>
         <button id="new" disabled>New BPM</button>
         <button id="reveal" disabled>Reveal</button>
-        <span id="status" class="muted"></span>
       </div>
 
-      <div class="row">
-        <label class="muted" for="guess">Your guess (BPM)</label>
-        <input id="guess" type="number" min="40" max="208" step="1" value="100" style="width:110px" />
-        <button id="minus5">-5</button>
-        <button id="minus1">-1</button>
-        <button id="plus1">+1</button>
-        <button id="plus5">+5</button>
-        <button id="submit">Submit</button>
+      <hr class="rule" />
+
+      <div class="guess-block">
+        <label class="field-label" for="guess">Your guess</label>
+        <div class="stepper">
+          <button class="nudge" id="minus5" aria-label="Decrease by 5">&minus;5</button>
+          <button class="nudge" id="minus1" aria-label="Decrease by 1">&minus;1</button>
+          <input id="guess" type="number" min="40" max="208" step="1" value="100"
+                 inputmode="numeric" aria-label="BPM guess" />
+          <button class="nudge" id="plus1" aria-label="Increase by 1">+1</button>
+          <button class="nudge" id="plus5" aria-label="Increase by 5">+5</button>
+          <button class="submit" id="submit">Submit guess</button>
+        </div>
       </div>
 
-      <div class="value" id="result">-</div>
+      <div class="result" id="result" aria-live="polite">&mdash;</div>
 
-      <div class="score">
-        <div class="pill">Streak: <span id="streak">0</span></div>
-        <div class="pill">Best abs err: <span id="best">-</span></div>
-        <div class="pill">Avg abs err: <span id="avg">-</span></div>
-        <div class="pill">Rounds: <span id="rounds">0</span></div>
+      <div class="stats">
+        <div class="stat">
+          <div class="stat-value" id="streak">0</div>
+          <span class="stat-label">Streak</span>
+        </div>
+        <div class="stat">
+          <div class="stat-value small" id="best">&mdash;</div>
+          <span class="stat-label">Best error</span>
+        </div>
+        <div class="stat">
+          <div class="stat-value small" id="avg">&mdash;</div>
+          <span class="stat-label">Avg error</span>
+        </div>
+        <div class="stat">
+          <div class="stat-value" id="rounds">0</div>
+          <span class="stat-label">Rounds</span>
+        </div>
       </div>
 
-      <div class="muted" id="hint" style="margin-top: 10px;">Tip: let the first two clicks settle, then map pulse spacing to your internal beat.</div>
+      <div class="legend">
+        <span class="legend-title">How guesses are scored</span>
+        <div class="tiers">
+          <span class="tier t-perfect"><i class="dot"></i><span class="name">Perfect</span><span class="range">&le;1 BPM off</span></span>
+          <span class="tier t-clean"><i class="dot"></i><span class="name">Clean</span><span class="range">&le;3 BPM off</span></span>
+          <span class="tier t-close"><i class="dot"></i><span class="name">Close</span><span class="range">&le;6 BPM off</span></span>
+          <span class="tier t-off"><i class="dot"></i><span class="name">Off</span><span class="range">&le;10 BPM off</span></span>
+          <span class="tier t-wild"><i class="dot"></i><span class="name">Wild</span><span class="range">&gt;10 BPM off</span></span>
+        </div>
+        <p class="legend-note">A guess within 4 BPM keeps your streak alive.</p>
+      </div>
+
+      <div class="settings">
+        <div class="setting">
+          <label class="field-label" for="mode">Mode</label>
+          <select id="mode">
+            <option value="easy">Easy &middot; &times;10</option>
+            <option value="musician">Musician &middot; &times;2</option>
+            <option value="hard">Hard &middot; any</option>
+          </select>
+        </div>
+        <div class="setting">
+          <label class="field-label" for="range">Range</label>
+          <select id="range">
+            <option value="40-120">40&ndash;120</option>
+            <option value="60-160" selected>60&ndash;160</option>
+            <option value="40-208">40&ndash;208</option>
+          </select>
+        </div>
+        <div class="setting">
+          <label class="field-label" for="len">Length</label>
+          <select id="len">
+            <option value="3">3 seconds</option>
+            <option value="4" selected>4 seconds</option>
+            <option value="5">5 seconds</option>
+          </select>
+        </div>
+      </div>
+
+      <p class="tip" id="hint">
+        Let the first two clicks settle, then map the pulse spacing to your internal beat.
+      </p>
       <div class="log" id="log"></div>
+
+      <div class="keys">
+        <span><span class="kbd">P</span> play</span>
+        <span><span class="kbd">Space</span> submit</span>
+        <span><span class="kbd">&uarr;</span> <span class="kbd">&darr;</span> adjust</span>
+      </div>
     </div>
-  </div>
+
+    <footer class="credit">
+      &copy; 2026
+      <a href="https://github.com/wuisabel-gif" target="_blank" rel="noopener noreferrer">wuisabel-gif</a>
+      &middot; All rights reserved
+    </footer>
+  </main>
 
 <script>
 (() => {
@@ -307,12 +662,54 @@
   const avgEl = document.getElementById("avg");
   const roundsEl = document.getElementById("rounds");
 
-  function setStatus(t) {
-    statusEl.textContent = t;
+  const discEl = document.getElementById("disc");
+  const discValueEl = document.getElementById("discValue");
+  const beatsEl = document.getElementById("beats");
+
+  const prefersReducedMotion =
+    window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  // Build the 4 beat dots for a 4/4 bar.
+  const BEAT_COUNT = 4;
+  const beatDots = [];
+  for (let i = 0; i < BEAT_COUNT; i += 1) {
+    const d = document.createElement("span");
+    d.className = "beat";
+    beatsEl.appendChild(d);
+    beatDots.push(d);
   }
 
-  function log(t) {
-    logEl.textContent = t;
+  let beatTimers = [];
+  function clearBeatTimers() {
+    beatTimers.forEach(clearTimeout);
+    beatTimers = [];
+    beatDots.forEach((d) => d.classList.remove("active", "down"));
+  }
+
+  function pulseBeat(idx, accented) {
+    beatDots.forEach((d, i) => {
+      d.classList.toggle("active", i === idx);
+      d.classList.toggle("down", i === idx && accented);
+    });
+    if (!prefersReducedMotion && discEl.animate) {
+      const peak = accented ? 1.06 : 1.035;
+      discEl.animate(
+        [{ transform: "scale(1)" }, { transform: `scale(${peak})` }, { transform: "scale(1)" }],
+        { duration: accented ? 220 : 170, easing: "cubic-bezier(0.22, 1, 0.36, 1)" }
+      );
+    }
+  }
+
+  function setStatus(t) { statusEl.textContent = t; }
+  function log(t) { logEl.textContent = t; }
+
+  function showHidden() {
+    discEl.classList.add("hidden-value");
+    discValueEl.textContent = "?";
+  }
+  function showValue(v) {
+    discEl.classList.remove("hidden-value");
+    discValueEl.textContent = String(v);
   }
 
   function clampGuess() {
@@ -324,8 +721,8 @@
   function updateStats() {
     streakEl.textContent = String(streak);
     roundsEl.textContent = String(rounds);
-    bestEl.textContent = best === null ? "-" : `${best.toFixed(1)} BPM`;
-    avgEl.textContent = rounds === 0 ? "-" : `${(sumAbsErr / rounds).toFixed(1)} BPM`;
+    bestEl.textContent = best === null ? "—" : `${best.toFixed(1)}`;
+    avgEl.textContent = rounds === 0 ? "—" : `${(sumAbsErr / rounds).toFixed(1)}`;
   }
 
   function parseRange() {
@@ -352,10 +749,13 @@
     ensureAudio();
     canSubmit = false;
     submitBtn.disabled = true;
-    setStatus("Playing... listen.");
-    resultEl.textContent = "-";
+    setStatus("Listening time — count the pulse.");
+    resultEl.innerHTML = "&mdash;";
     resultEl.classList.remove("danger", "ok");
     log("");
+    clearBeatTimers();
+    showHidden();
+    discEl.classList.add("playing");
 
     const interval = 60 / chosenBpm;
     const now = ctx.currentTime + 0.08;
@@ -364,16 +764,24 @@
     let t = now;
     let beatIndex = 0;
     while (t < end) {
-      clickSound(t, beatIndex % 4 === 0);
+      const accented = beatIndex % 4 === 0;
+      clickSound(t, accented);
+
+      const delayMs = Math.max(0, (t - ctx.currentTime) * 1000);
+      const dotIdx = beatIndex % BEAT_COUNT;
+      beatTimers.push(setTimeout(() => pulseBeat(dotIdx, accented), delayMs));
+
       t += interval;
       beatIndex += 1;
     }
 
     await new Promise((res) => setTimeout(res, (seconds * 1000) + 120));
 
+    clearBeatTimers();
+    discEl.classList.remove("playing");
     canSubmit = true;
     submitBtn.disabled = false;
-    setStatus("Done. Enter your BPM guess.");
+    setStatus("Now enter your BPM guess.");
   }
 
   function grade(absErr) {
@@ -387,9 +795,9 @@
   function submit() {
     clampGuess();
     if (!canSubmit || bpm === null) {
-      resultEl.textContent = "Play first.";
+      resultEl.textContent = "Press Play first.";
       resultEl.classList.add("danger");
-      setTimeout(() => resultEl.classList.remove("danger"), 240);
+      setTimeout(() => resultEl.classList.remove("danger"), 600);
       return;
     }
 
@@ -407,17 +815,20 @@
     }
 
     const label = grade(absErr);
-    resultEl.textContent = `${label} - actual ${bpm} BPM, you guessed ${guess} (error ${err >= 0 ? "+" : ""}${err})`;
+    const sign = err >= 0 ? "+" : "";
+    resultEl.innerHTML =
+      `<span class="judgement">${label}</span> &middot; actual <strong>${bpm}</strong>, ` +
+      `you guessed ${guess} (${sign}${err})`;
     resultEl.classList.remove("danger", "ok");
-    if (absErr <= 4) {
-      resultEl.classList.add("ok");
-    }
-    log(`Mode: ${modeEl.value}, Range: ${rangeEl.value}, Length: ${lenEl.value}s`);
+    if (absErr <= 4) resultEl.classList.add("ok");
+
+    showValue(bpm);
+    log(`Mode: ${modeEl.value} · Range: ${rangeEl.value} · Length: ${lenEl.value}s`);
 
     updateStats();
     canSubmit = false;
     submitBtn.disabled = true;
-    setStatus("Press Replay same or New BPM.");
+    setStatus("Replay the same tempo or draw a new one.");
   }
 
   function enablePostPlayButtons() {
@@ -447,20 +858,27 @@
 
   revealBtn.addEventListener("click", () => {
     if (lastBpm === null) return;
-    setStatus(`Revealed: ${lastBpm} BPM`);
-    resultEl.textContent = `Actual BPM: ${lastBpm}`;
-    resultEl.classList.remove("danger");
+    setStatus(`Revealed — ${lastBpm} BPM`);
+    showValue(lastBpm);
+    resultEl.innerHTML = `Actual tempo: <strong>${lastBpm}</strong> BPM`;
+    resultEl.classList.remove("danger", "ok");
   });
 
   submitBtn.addEventListener("click", submit);
-  document.getElementById("minus5").addEventListener("click", () => { guessEl.value = Number(guessEl.value) - 5; clampGuess(); });
-  document.getElementById("minus1").addEventListener("click", () => { guessEl.value = Number(guessEl.value) - 1; clampGuess(); });
-  document.getElementById("plus1").addEventListener("click", () => { guessEl.value = Number(guessEl.value) + 1; clampGuess(); });
-  document.getElementById("plus5").addEventListener("click", () => { guessEl.value = Number(guessEl.value) + 5; clampGuess(); });
+
+  function nudge(delta) {
+    guessEl.value = Number(guessEl.value) + delta;
+    clampGuess();
+  }
+  document.getElementById("minus5").addEventListener("click", () => nudge(-5));
+  document.getElementById("minus1").addEventListener("click", () => nudge(-1));
+  document.getElementById("plus1").addEventListener("click", () => nudge(1));
+  document.getElementById("plus5").addEventListener("click", () => nudge(5));
   guessEl.addEventListener("change", clampGuess);
 
   window.addEventListener("keydown", (e) => {
-    if (e.key.toLowerCase() === "p") {
+    const typing = document.activeElement === guessEl;
+    if (e.key.toLowerCase() === "p" && !typing) {
       playBtn.click();
     }
     if (e.key === " ") {
@@ -468,12 +886,14 @@
       submit();
     }
     if (e.key === "ArrowUp") {
-      guessEl.value = Number(guessEl.value) + 1;
-      clampGuess();
+      if (typing) return; // let the input's own stepping work when focused
+      e.preventDefault();
+      nudge(1);
     }
     if (e.key === "ArrowDown") {
-      guessEl.value = Number(guessEl.value) - 1;
-      clampGuess();
+      if (typing) return;
+      e.preventDefault();
+      nudge(-1);
     }
   });
 
